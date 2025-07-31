@@ -1,108 +1,73 @@
 "use client"
 
-import { motion, useInView } from "framer-motion"
-import { useRef, useEffect, useState } from "react"
-import { TrendingUp, Users, Calendar, Award } from "lucide-react"
+import { motion } from "framer-motion"
+import { useEffect, useState } from "react"
 
-export function StatsSection() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: "-100px" })
+const stats = [
+  { label: "Active Users", value: 2500000, suffix: "+" },
+  { label: "Events Hosted", value: 150000, suffix: "+" },
+  { label: "Countries", value: 95, suffix: "" },
+  { label: "Success Rate", value: 99, suffix: "%" },
+]
 
-  return (
-    <section ref={ref} className="py-20 relative">
-      <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-4xl md:text-6xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-              Trusted by Millions
-            </span>
-          </h2>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            Join the revolution that's transforming how the world connects through events
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          {[
-            { icon: Users, number: 2500000, suffix: "+", label: "Global Users", color: "from-blue-400 to-cyan-400" },
-            {
-              icon: Calendar,
-              number: 150000,
-              suffix: "+",
-              label: "Events Hosted",
-              color: "from-purple-400 to-pink-400",
-            },
-            {
-              icon: TrendingUp,
-              number: 98,
-              suffix: "%",
-              label: "Success Rate",
-              color: "from-green-400 to-emerald-400",
-            },
-            { icon: Award, number: 50, suffix: "+", label: "Awards Won", color: "from-yellow-400 to-orange-400" },
-          ].map((stat, index) => (
-            <StatCard key={index} {...stat} delay={index * 0.2} isInView={isInView} />
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function StatCard({ icon: Icon, number, suffix, label, color, delay, isInView }: any) {
+function AnimatedCounter({ value, suffix }: { value: number; suffix: string }) {
   const [count, setCount] = useState(0)
 
   useEffect(() => {
-    if (!isInView) return
+    const duration = 2000
+    const steps = 60
+    const increment = value / steps
+    let current = 0
 
-    const timer = setTimeout(() => {
-      const increment = number / 100
-      const interval = setInterval(() => {
-        setCount((prev) => {
-          if (prev >= number) {
-            clearInterval(interval)
-            return number
-          }
-          return Math.min(prev + increment, number)
-        })
-      }, 20)
+    const timer = setInterval(() => {
+      current += increment
+      if (current >= value) {
+        setCount(value)
+        clearInterval(timer)
+      } else {
+        setCount(Math.floor(current))
+      }
+    }, duration / steps)
 
-      return () => clearInterval(interval)
-    }, delay * 1000)
-
-    return () => clearTimeout(timer)
-  }, [isInView, number, delay])
+    return () => clearInterval(timer)
+  }, [value])
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.5, y: 50 }}
-      animate={isInView ? { opacity: 1, scale: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, delay }}
-      whileHover={{ scale: 1.05, y: -10 }}
-      className="relative group"
-    >
-      <div
-        className={`absolute inset-0 bg-gradient-to-r ${color} rounded-2xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-300`}
-      />
-      <div className="relative bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10 group-hover:border-white/20 transition-all duration-300 text-center">
+    <span>
+      {count.toLocaleString()}
+      {suffix}
+    </span>
+  )
+}
+
+export function StatsSection() {
+  return (
+    <section className="relative z-10 py-20 px-6">
+      <div className="max-w-6xl mx-auto">
         <motion.div
-          animate={{ rotate: [0, 360] }}
-          transition={{ duration: 20, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-          className="mb-4"
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+          viewport={{ once: true }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-8"
         >
-          <Icon className={`w-12 h-12 mx-auto bg-gradient-to-r ${color} bg-clip-text text-transparent`} />
+          {stats.map((stat, index) => (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: index * 0.1 }}
+              viewport={{ once: true }}
+              className="text-center space-y-2"
+            >
+              <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white to-purple-300 bg-clip-text text-transparent">
+                <AnimatedCounter value={stat.value} suffix={stat.suffix} />
+              </div>
+              <div className="text-purple-300 text-sm md:text-base">{stat.label}</div>
+            </motion.div>
+          ))}
         </motion.div>
-        <div className="text-4xl md:text-5xl font-bold text-white mb-2">
-          {Math.floor(count).toLocaleString()}
-          {suffix}
-        </div>
-        <div className="text-gray-400 font-medium">{label}</div>
       </div>
-    </motion.div>
+    </section>
   )
 }

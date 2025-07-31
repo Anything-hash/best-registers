@@ -1,17 +1,16 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Calendar, Zap, Sparkles } from "lucide-react"
+import { Sparkles } from "lucide-react"
 
 export function LoadingScreen() {
   return (
     <motion.div
       initial={{ opacity: 1 }}
-      exit={{ opacity: 0, scale: 0.8 }}
-      transition={{ duration: 0.8, ease: "easeInOut" }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900"
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center z-50"
     >
-      <div className="text-center">
+      <div className="text-center space-y-8">
         <motion.div
           animate={{
             rotate: 360,
@@ -19,64 +18,32 @@ export function LoadingScreen() {
           }}
           transition={{
             rotate: { duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "linear" },
-            scale: { duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" },
+            scale: { duration: 1.5, repeat: Number.POSITIVE_INFINITY },
           }}
-          className="relative mx-auto mb-8 w-24 h-24"
+          className="relative mx-auto w-20 h-20 bg-gradient-to-r from-primary to-purple-600 rounded-full flex items-center justify-center"
         >
-          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400 to-purple-500 blur-lg opacity-75" />
-          <div className="relative flex items-center justify-center w-full h-full rounded-full bg-gradient-to-r from-cyan-400 to-purple-500">
-            <Calendar className="w-10 h-10 text-white" />
-          </div>
+          <Sparkles className="h-10 w-10 text-white" />
+          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-purple-600 opacity-20 blur-xl animate-pulse" />
         </motion.div>
-
-        <motion.h1
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-          className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-4"
-        >
-          EventHub Pro
-        </motion.h1>
-
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: "100%" }}
-          transition={{ delay: 1, duration: 2, ease: "easeInOut" }}
-          className="h-1 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full mx-auto max-w-xs mb-4"
-        />
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5, duration: 0.8 }}
-          className="text-gray-300 text-lg"
-        >
-          Preparing the future of events...
-        </motion.p>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2, duration: 0.8 }}
-          className="flex justify-center space-x-4 mt-6"
+          transition={{ delay: 0.5 }}
+          className="space-y-2"
         >
-          {[Zap, Sparkles, Calendar].map((Icon, index) => (
-            <motion.div
-              key={index}
-              animate={{
-                y: [0, -10, 0],
-                opacity: [0.5, 1, 0.5],
-              }}
-              transition={{
-                duration: 1.5,
-                repeat: Number.POSITIVE_INFINITY,
-                delay: index * 0.2,
-              }}
-            >
-              <Icon className="w-6 h-6 text-cyan-400" />
-            </motion.div>
-          ))}
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-purple-300 bg-clip-text text-transparent">
+            EventHub
+          </h1>
+          <p className="text-purple-300">Loading the future of events...</p>
         </motion.div>
+
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: "100%" }}
+          transition={{ duration: 2.5, ease: "easeInOut" }}
+          className="h-1 bg-gradient-to-r from-primary to-purple-600 rounded-full mx-auto max-w-xs"
+        />
       </div>
     </motion.div>
   )

@@ -1,40 +1,33 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Calendar, Zap, Star, Sparkles, Rocket, Globe } from "lucide-react"
+import { Calendar, Users, Zap, Star, Heart, Trophy } from "lucide-react"
 
-interface FloatingElementsProps {
-  mousePosition: { x: number; y: number }
-}
+const icons = [Calendar, Users, Zap, Star, Heart, Trophy]
 
-export function FloatingElements({ mousePosition }: FloatingElementsProps) {
-  const icons = [Calendar, Zap, Star, Sparkles, Rocket, Globe]
-
+export function FloatingElements() {
   return (
-    <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 2 }}>
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
       {icons.map((Icon, index) => (
         <motion.div
           key={index}
-          className="absolute"
-          style={{
-            left: `${10 + index * 15}%`,
-            top: `${20 + index * 10}%`,
+          className="absolute text-purple-400/20"
+          initial={{
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
           }}
           animate={{
-            x: mousePosition.x * 0.01 * (index + 1),
-            y: mousePosition.y * 0.01 * (index + 1),
-            rotate: [0, 360],
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            rotate: 360,
           }}
           transition={{
-            x: { type: "spring", stiffness: 50, damping: 20 },
-            y: { type: "spring", stiffness: 50, damping: 20 },
-            rotate: { duration: 20, repeat: Number.POSITIVE_INFINITY, ease: "linear" },
+            duration: 20 + Math.random() * 10,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "linear",
           }}
         >
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full blur-lg opacity-20" />
-            <Icon className="relative w-8 h-8 text-cyan-400 opacity-30" />
-          </div>
+          <Icon size={24 + Math.random() * 24} />
         </motion.div>
       ))}
     </div>

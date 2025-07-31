@@ -1,88 +1,32 @@
-import { streamText } from "ai"
 import { openai } from "@ai-sdk/openai"
-
-// Mock event data for recommendations
-const mockEvents = [
-  {
-    id: 1,
-    title: "Tech Innovation Summit 2024",
-    date: "2024-03-15",
-    location: "San Francisco, CA",
-    category: "Technology",
-    price: "$299",
-    description: "Join industry leaders for cutting-edge tech discussions",
-  },
-  {
-    id: 2,
-    title: "Digital Marketing Masterclass",
-    date: "2024-03-20",
-    location: "New York, NY",
-    category: "Marketing",
-    price: "$199",
-    description: "Learn advanced digital marketing strategies",
-  },
-  {
-    id: 3,
-    title: "Creative Design Workshop",
-    date: "2024-03-25",
-    location: "Los Angeles, CA",
-    category: "Design",
-    price: "$149",
-    description: "Hands-on workshop for creative professionals",
-  },
-  {
-    id: 4,
-    title: "Startup Pitch Competition",
-    date: "2024-04-01",
-    location: "Austin, TX",
-    category: "Business",
-    price: "Free",
-    description: "Watch innovative startups pitch their ideas",
-  },
-  {
-    id: 5,
-    title: "AI & Machine Learning Conference",
-    date: "2024-04-10",
-    location: "Seattle, WA",
-    category: "Technology",
-    price: "$399",
-    description: "Explore the future of AI and ML technologies",
-  },
-]
+import { streamText } from "ai"
 
 export async function POST(req: Request) {
   const { messages } = await req.json()
 
   const result = await streamText({
     model: openai("gpt-4o"),
-    system: `You are EventBot, an intelligent assistant for event recommendations. You help users discover and register for amazing events.
-
-Available Events:
-${mockEvents
-  .map(
-    (event) =>
-      `- ${event.title} (${event.date}) in ${event.location} - ${event.category} - ${event.price}
-    Description: ${event.description}`,
-  )
-  .join("\n")}
+    system: `You are EventBot, an intelligent AI assistant for EventHub - the world's most advanced event discovery platform. You help users find perfect events based on their interests, location, budget, and schedule.
 
 Your capabilities:
-1. Recommend events based on user preferences (location, category, budget, date)
-2. Provide detailed information about specific events
-3. Help users understand event registration process
-4. Answer questions about event logistics
-5. Suggest similar events based on interests
+- Recommend events based on user preferences
+- Filter by location, category, price, date, and time
+- Provide detailed event information
+- Suggest trending and popular events
+- Help with event planning and scheduling
 
-Guidelines:
-- Be enthusiastic and helpful
-- Provide specific event recommendations when possible
-- Include relevant details like dates, locations, and prices
-- Ask clarifying questions to better understand user needs
-- Use emojis to make responses more engaging
-- Keep responses concise but informative
-- Always encourage users to register for events they're interested in
+Available event categories: Technology, Business, Design, Marketing, Health & Wellness, Arts & Culture, Sports & Fitness, Food & Drink, Music, Education, Networking, Startups, AI & Machine Learning, Web Development, Data Science, Photography, Writing, Finance, Real Estate, Travel, Fashion, Gaming, Science, Environment, Non-profit, Career Development
 
-If users ask about events not in the list, you can suggest similar alternatives from the available events or mention that you can help them find events that match their interests.`,
+Sample events database (use these as examples):
+- "AI Revolution Summit" - San Francisco, $299, March 15-16, Technology
+- "Design Thinking Workshop" - New York, $150, March 20, Design  
+- "Startup Pitch Night" - Austin, Free, March 22, Startups
+- "Digital Marketing Masterclass" - Los Angeles, $199, March 25, Marketing
+- "React Conference 2024" - Seattle, $399, April 5-7, Technology
+- "Photography Basics" - Chicago, $89, March 30, Photography
+- "Business Networking Mixer" - Miami, $25, March 28, Networking
+
+Always be helpful, enthusiastic, and provide specific recommendations. Format your responses in a conversational way and include relevant details like pricing, dates, and locations when suggesting events.`,
     messages,
   })
 
