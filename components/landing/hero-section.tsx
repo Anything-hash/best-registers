@@ -2,87 +2,185 @@
 
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Play } from "lucide-react"
+import { ArrowRight, Play, Flame, Droplets, Wind } from "lucide-react"
 import Link from "next/link"
 
-export function HeroSection() {
+interface HeroSectionProps {
+  currentElement: "fire" | "water" | "air"
+}
+
+export function HeroSection({ currentElement }: HeroSectionProps) {
+  const elementConfig = {
+    fire: {
+      icon: Flame,
+      color: "from-orange-500 to-red-600",
+      bgColor: "from-orange-50 to-red-50",
+      text: "Ignite Your Passion",
+      description: "Discover events that spark your interests and fuel your creativity",
+    },
+    water: {
+      icon: Droplets,
+      color: "from-blue-500 to-cyan-600",
+      bgColor: "from-blue-50 to-cyan-50",
+      text: "Flow Into Adventure",
+      description: "Dive deep into experiences that refresh and inspire your soul",
+    },
+    air: {
+      icon: Wind,
+      color: "from-green-500 to-emerald-600",
+      bgColor: "from-green-50 to-emerald-50",
+      text: "Soar to New Heights",
+      description: "Let your spirit fly with events that elevate and energize you",
+    },
+  }
+
+  const config = elementConfig[currentElement]
+  const Icon = config.icon
+
   return (
-    <section className="relative z-10 min-h-screen flex items-center justify-center px-6">
-      <div className="max-w-6xl mx-auto text-center space-y-8">
+    <section className="min-h-screen flex items-center justify-center pt-20 px-4">
+      <div className="container mx-auto text-center space-y-12">
+        {/* Floating Element Badge */}
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          key={currentElement}
+          initial={{ opacity: 0, y: 50, scale: 0.8 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 1 }}
+          className="relative inline-block"
+        >
+          <motion.div
+            animate={{
+              scale: [1, 1.2, 1],
+              rotate: [0, 5, -5, 0],
+            }}
+            transition={{
+              scale: { duration: 3, repeat: Number.POSITIVE_INFINITY },
+              rotate: { duration: 4, repeat: Number.POSITIVE_INFINITY },
+            }}
+            className={`w-20 h-20 bg-gradient-to-r ${config.color} rounded-full flex items-center justify-center shadow-2xl mx-auto mb-6`}
+          >
+            <Icon className="w-10 h-10 text-white" />
+          </motion.div>
+        </motion.div>
+
+        {/* Main Heading */}
+        <motion.div
+          key={`heading-${currentElement}`}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.2 }}
+          transition={{ duration: 1, delay: 0.3 }}
           className="space-y-6"
         >
           <motion.h1
-            className="text-6xl md:text-8xl font-bold leading-tight"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.4 }}
+            animate={{
+              scale: [1, 1.02, 1],
+            }}
+            transition={{ duration: 4, repeat: Number.POSITIVE_INFINITY }}
+            className="text-6xl md:text-8xl font-black leading-tight"
           >
-            <span className="bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
-              Discover
-            </span>
+            <span className="text-gray-800">Discover</span>
             <br />
-            <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 bg-clip-text text-transparent">
-              Amazing Events
-            </span>
+            <motion.span
+              animate={{
+                backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+              }}
+              transition={{ duration: 5, repeat: Number.POSITIVE_INFINITY }}
+              className={`bg-gradient-to-r ${config.color} bg-clip-text text-transparent bg-[length:200%_auto]`}
+            >
+              {config.text}
+            </motion.span>
           </motion.h1>
 
           <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.6 }}
-            className="text-xl md:text-2xl text-purple-200 max-w-3xl mx-auto leading-relaxed"
+            animate={{ opacity: [0.8, 1, 0.8] }}
+            transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
+            className="text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed"
           >
-            Experience the future of event discovery with AI-powered recommendations, immersive previews, and seamless
-            registration. Join millions of event enthusiasts worldwide.
+            {config.description}
           </motion.p>
         </motion.div>
 
+        {/* CTA Buttons */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.8 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-6"
+          transition={{ duration: 1, delay: 0.6 }}
+          className="flex flex-col sm:flex-row gap-6 justify-center items-center"
         >
-          <Link href="/dashboard">
-            <Button
-              size="lg"
-              className="bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-lg px-8 py-4 rounded-full group"
-            >
-              Start Exploring
-              <motion.div className="ml-2" whileHover={{ x: 5 }} transition={{ type: "spring", stiffness: 400 }}>
-                <ArrowRight className="h-5 w-5" />
-              </motion.div>
-            </Button>
-          </Link>
-
-          <Button
-            variant="outline"
-            size="lg"
-            className="border-white/20 text-white hover:bg-white/10 text-lg px-8 py-4 rounded-full group bg-transparent"
+          <motion.div
+            whileHover={{
+              scale: 1.05,
+              boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
+            }}
+            whileTap={{ scale: 0.95 }}
           >
-            <Play className="h-5 w-5 mr-2" />
-            Watch Demo
-          </Button>
+            <Button
+              asChild
+              size="lg"
+              className={`bg-gradient-to-r ${config.color} hover:shadow-2xl text-white px-10 py-6 text-xl font-semibold rounded-full transition-all duration-300`}
+            >
+              <Link href="/register" className="flex items-center space-x-3">
+                <span>Start Exploring</span>
+                <motion.div animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}>
+                  <ArrowRight className="w-6 h-6" />
+                </motion.div>
+              </Link>
+            </Button>
+          </motion.div>
+
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              variant="outline"
+              size="lg"
+              className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 px-10 py-6 text-xl font-semibold rounded-full bg-white/80 backdrop-blur-sm"
+            >
+              <Play className="w-6 h-6 mr-3" />
+              Watch Demo
+            </Button>
+          </motion.div>
         </motion.div>
 
+        {/* Stats Cards */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, delay: 1 }}
-          className="mt-16"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.9 }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto mt-20"
         >
-          <div className="relative max-w-4xl mx-auto">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-purple-600/20 rounded-3xl blur-3xl" />
-            <div className="relative bg-black/20 backdrop-blur-xl rounded-3xl p-8 border border-white/10">
-              <div className="aspect-video bg-gradient-to-br from-purple-900/50 to-pink-900/50 rounded-2xl flex items-center justify-center">
-                <Play className="h-16 w-16 text-white/80" />
-              </div>
-            </div>
-          </div>
+          {[
+            { number: "50K+", label: "Amazing Events", delay: 0 },
+            { number: "100K+", label: "Happy Users", delay: 0.2 },
+            { number: "500+", label: "Cities Worldwide", delay: 0.4 },
+          ].map((stat, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1.2 + stat.delay }}
+              whileHover={{
+                scale: 1.05,
+                y: -5,
+              }}
+              className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl border border-gray-200/50"
+            >
+              <motion.div
+                animate={{
+                  scale: [1, 1.1, 1],
+                  color:
+                    currentElement === "fire"
+                      ? ["#f97316", "#dc2626", "#f97316"]
+                      : currentElement === "water"
+                        ? ["#3b82f6", "#0891b2", "#3b82f6"]
+                        : ["#10b981", "#059669", "#10b981"],
+                }}
+                transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY, delay: index * 0.5 }}
+                className="text-4xl font-black mb-2"
+              >
+                {stat.number}
+              </motion.div>
+              <div className="text-gray-600 font-medium">{stat.label}</div>
+            </motion.div>
+          ))}
         </motion.div>
       </div>
     </section>

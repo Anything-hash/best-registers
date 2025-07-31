@@ -1,9 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { motion } from "framer-motion"
-import { MessageCircle, Sparkles } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { motion, AnimatePresence } from "framer-motion"
+import { MessageCircle, X, Sparkles } from "lucide-react"
 import { ChatBot } from "./chat-bot"
 
 export function FloatingChatButton() {
@@ -11,48 +10,76 @@ export function FloatingChatButton() {
 
   return (
     <>
-      <motion.div className="fixed bottom-4 right-4 z-40" whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-        <Button
-          onClick={() => setIsOpen(!isOpen)}
-          size="lg"
-          className="rounded-full w-14 h-14 shadow-2xl bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 relative overflow-hidden group"
-        >
-          <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.3 }}>
-            {isOpen ? <MessageCircle className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
-          </motion.div>
+      <motion.button
+        onClick={() => setIsOpen(!isOpen)}
+        className="fixed bottom-8 right-8 z-50"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        animate={{
+          boxShadow: [
+            "0 0 20px rgba(0, 255, 255, 0.5)",
+            "0 0 40px rgba(255, 0, 255, 0.5)",
+            "0 0 20px rgba(0, 255, 255, 0.5)",
+          ],
+        }}
+        transition={{
+          boxShadow: { duration: 2, repeat: Number.POSITIVE_INFINITY },
+        }}
+      >
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full blur-xl opacity-50" />
+          <div className="relative w-16 h-16 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-full flex items-center justify-center border-2 border-white/20">
+            <AnimatePresence mode="wait">
+              {isOpen ? (
+                <motion.div
+                  key="close"
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <X className="w-6 h-6 text-white" />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="chat"
+                  initial={{ rotate: 90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: -90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="relative"
+                >
+                  <MessageCircle className="w-6 h-6 text-white" />
+                  <motion.div
+                    animate={{
+                      scale: [1, 1.2, 1],
+                      opacity: [0.5, 1, 0.5],
+                    }}
+                    transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+                    className="absolute -top-1 -right-1"
+                  >
+                    <Sparkles className="w-3 h-3 text-yellow-400" />
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      </motion.button>
 
-          {/* Sparkle animation */}
+      <AnimatePresence>
+        {isOpen && (
           <motion.div
-            animate={{
-              rotate: 360,
-              scale: [1, 1.2, 1],
-            }}
-            transition={{
-              rotate: { duration: 3, repeat: Number.POSITIVE_INFINITY, ease: "linear" },
-              scale: { duration: 2, repeat: Number.POSITIVE_INFINITY },
-            }}
-            className="absolute top-1 right-1"
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 20 }}
+            transition={{ duration: 0.3 }}
+            className="fixed bottom-28 right-8 z-40"
           >
-            <Sparkles className="h-3 w-3 text-yellow-300" />
-          </motion.div>
-
-          {/* Glow effect */}
-          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-purple-600 opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-xl" />
-        </Button>
-
-        {/* Notification dot */}
-        {!isOpen && (
-          <motion.div
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
-            className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center"
-          >
-            <div className="w-2 h-2 bg-white rounded-full" />
+            <ChatBot />
           </motion.div>
         )}
-      </motion.div>
-
-      <ChatBot isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      </AnimatePresence>
     </>
   )
 }

@@ -1,9 +1,9 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Calendar, Users, Zap, Star, Heart, Trophy } from "lucide-react"
+import { Calendar, Users, Star, Zap, Globe, Heart } from "lucide-react"
 
-const icons = [Calendar, Users, Zap, Star, Heart, Trophy]
+const icons = [Calendar, Users, Star, Zap, Globe, Heart]
 
 export function FloatingElements() {
   return (
@@ -11,7 +11,7 @@ export function FloatingElements() {
       {icons.map((Icon, index) => (
         <motion.div
           key={index}
-          className="absolute text-purple-400/20"
+          className="absolute"
           initial={{
             x: Math.random() * window.innerWidth,
             y: Math.random() * window.innerHeight,
@@ -27,7 +27,7 @@ export function FloatingElements() {
             ease: "linear",
           }}
         >
-          <Icon size={24 + Math.random() * 24} />
+          <Icon className="w-6 h-6 text-blue-400/20" />
         </motion.div>
       ))}
     </div>

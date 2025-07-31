@@ -1,164 +1,146 @@
 "use client"
-import { useChat } from "ai/react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Send, Bot, User, Sparkles, X } from "lucide-react"
+import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Card } from "@/components/ui/card"
+import { Send, Bot, User, Sparkles } from "lucide-react"
+import { useChat } from "ai/react"
 
-interface ChatBotProps {
-  isOpen: boolean
-  onClose: () => void
-}
-
-export function ChatBot({ isOpen, onClose }: ChatBotProps) {
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat()
+export function ChatBot() {
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+    api: "/api/chat",
+  })
 
   const suggestedQuestions = [
-    "Show me tech events in San Francisco",
-    "What free events are available?",
-    "Find design workshops this month",
-    "Recommend business events under $200",
+    "Find tech events in San Francisco",
+    "Show me free workshops this week",
+    "Recommend music festivals",
+    "What's trending in AI events?",
   ]
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.8, y: 20 }}
-          className="fixed bottom-20 right-4 z-50 w-96 h-[600px] max-w-[calc(100vw-2rem)] max-h-[calc(100vh-6rem)]"
-        >
-          <Card className="h-full flex flex-col bg-background/95 backdrop-blur-xl border-2 border-primary/20 shadow-2xl">
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-primary/10 to-purple-500/10">
-              <div className="flex items-center gap-2">
-                <div className="relative">
-                  <Bot className="h-6 w-6 text-primary" />
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-                    className="absolute -top-1 -right-1"
-                  >
-                    <Sparkles className="h-3 w-3 text-yellow-500" />
-                  </motion.div>
-                </div>
-                <div>
-                  <h3 className="font-semibold">EventBot</h3>
-                  <p className="text-xs text-muted-foreground">AI Event Assistant</p>
-                </div>
-              </div>
-              <Button variant="ghost" size="sm" onClick={onClose}>
-                <X className="h-4 w-4" />
-              </Button>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="w-96 h-96 bg-black/80 backdrop-blur-2xl rounded-2xl border border-cyan-400/30 overflow-hidden"
+    >
+      {/* Header */}
+      <div className="p-4 border-b border-cyan-400/30 bg-gradient-to-r from-cyan-500/20 to-purple-500/20">
+        <div className="flex items-center space-x-3">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+            className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full flex items-center justify-center"
+          >
+            <Bot className="w-4 h-4 text-black" />
+          </motion.div>
+          <div>
+            <h3 className="font-semibold text-white">AI Event Assistant</h3>
+            <p className="text-xs text-cyan-400">Powered by Quantum AI</p>
+          </div>
+          <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}>
+            <Sparkles className="w-4 h-4 text-yellow-400" />
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Messages */}
+      <div className="flex-1 p-4 h-64 overflow-y-auto space-y-4">
+        {messages.length === 0 ? (
+          <div className="space-y-3">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center text-gray-400 text-sm"
+            >
+              Ask me anything about events!
+            </motion.div>
+            <div className="space-y-2">
+              {suggestedQuestions.map((question, index) => (
+                <motion.button
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  onClick={() => handleInputChange({ target: { value: question } } as any)}
+                  className="w-full text-left p-2 text-xs text-cyan-400 bg-cyan-400/10 rounded-lg hover:bg-cyan-400/20 transition-colors"
+                >
+                  {question}
+                </motion.button>
+              ))}
             </div>
+          </div>
+        ) : (
+          messages.map((message) => (
+            <motion.div
+              key={message.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`flex items-start space-x-2 ${message.role === "user" ? "justify-end" : "justify-start"}`}
+            >
+              {message.role === "assistant" && (
+                <div className="w-6 h-6 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Bot className="w-3 h-3 text-black" />
+                </div>
+              )}
+              {message.role === "user" && (
+                <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+                  <User className="w-3 h-3 text-white" />
+                </div>
+              )}
+              <div
+                className={`max-w-xs p-2 rounded-lg text-sm ${
+                  message.role === "user" ? "bg-cyan-500/20 text-cyan-100" : "bg-purple-500/20 text-purple-100"
+                }`}
+              >
+                {message.content}
+              </div>
+            </motion.div>
+          ))
+        )}
 
-            {/* Messages */}
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-4">
-                {messages.length === 0 && (
+        {isLoading && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center space-x-2">
+            <div className="w-6 h-6 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full flex items-center justify-center">
+              <Bot className="w-3 h-3 text-black" />
+            </div>
+            <div className="bg-purple-500/20 p-2 rounded-lg">
+              <div className="flex space-x-1">
+                {[0, 1, 2].map((i) => (
                   <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-center space-y-4"
-                  >
-                    <div className="text-muted-foreground">
-                      👋 Hi! I'm EventBot, your AI assistant for finding amazing events!
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-sm text-muted-foreground">Try asking:</p>
-                      {suggestedQuestions.map((question, index) => (
-                        <motion.button
-                          key={index}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.1 }}
-                          onClick={() => handleInputChange({ target: { value: question } } as any)}
-                          className="block w-full text-left p-2 text-sm bg-muted/50 hover:bg-muted rounded-lg transition-colors"
-                        >
-                          "{question}"
-                        </motion.button>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-
-                {messages.map((message, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className={`flex gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}
-                  >
-                    {message.role === "assistant" && (
-                      <div className="flex-shrink-0">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                          <Bot className="h-4 w-4 text-primary" />
-                        </div>
-                      </div>
-                    )}
-
-                    <div
-                      className={`max-w-[80%] rounded-2xl p-3 ${
-                        message.role === "user" ? "bg-primary text-primary-foreground ml-auto" : "bg-muted"
-                      }`}
-                    >
-                      <div className="text-sm whitespace-pre-wrap">{message.content}</div>
-                    </div>
-
-                    {message.role === "user" && (
-                      <div className="flex-shrink-0">
-                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                          <User className="h-4 w-4" />
-                        </div>
-                      </div>
-                    )}
-                  </motion.div>
+                    key={i}
+                    animate={{ scale: [1, 1.5, 1] }}
+                    transition={{
+                      duration: 0.6,
+                      repeat: Number.POSITIVE_INFINITY,
+                      delay: i * 0.2,
+                    }}
+                    className="w-1 h-1 bg-purple-400 rounded-full"
+                  />
                 ))}
-
-                {isLoading && (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Bot className="h-4 w-4 text-primary" />
-                    </div>
-                    <div className="bg-muted rounded-2xl p-3">
-                      <div className="flex gap-1">
-                        {[0, 1, 2].map((i) => (
-                          <motion.div
-                            key={i}
-                            animate={{ scale: [1, 1.2, 1] }}
-                            transition={{ duration: 0.6, repeat: Number.POSITIVE_INFINITY, delay: i * 0.2 }}
-                            className="w-2 h-2 bg-muted-foreground/50 rounded-full"
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
               </div>
-            </ScrollArea>
-
-            {/* Input */}
-            <div className="p-4 border-t">
-              <form onSubmit={handleSubmit} className="flex gap-2">
-                <Input
-                  value={input}
-                  onChange={handleInputChange}
-                  placeholder="Ask me about events..."
-                  className="flex-1"
-                  disabled={isLoading}
-                />
-                <Button type="submit" size="sm" disabled={isLoading || !input.trim()}>
-                  <Send className="h-4 w-4" />
-                </Button>
-              </form>
             </div>
-          </Card>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          </motion.div>
+        )}
+      </div>
+
+      {/* Input */}
+      <form onSubmit={handleSubmit} className="p-4 border-t border-cyan-400/30">
+        <div className="flex space-x-2">
+          <Input
+            value={input}
+            onChange={handleInputChange}
+            placeholder="Ask about events..."
+            className="flex-1 bg-black/50 border-cyan-400/30 text-white placeholder-gray-400 focus:border-cyan-400"
+          />
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 text-white border-0"
+          >
+            <Send className="w-4 h-4" />
+          </Button>
+        </div>
+      </form>
+    </motion.div>
   )
 }
