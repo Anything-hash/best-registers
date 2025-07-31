@@ -2,17 +2,16 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
+import { Providers } from "@/components/providers"
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "EventHub - Premium Event Registration Platform",
+  title: "EventHub Pro - The Future of Event Management",
   description:
-    "Join thousands of professionals in workshops, seminars, and conferences. Register for premium events and advance your career.",
-  keywords: "events, workshops, seminars, conferences, registration, professional development",
-    generator: 'v0.dev'
+    "Experience the most advanced event registration platform with AI-powered recommendations, real-time analytics, and immersive user experiences.",
+  keywords: "events, AI, analytics, registration, future, technology, immersive",
+  generator: "v0.dev",
 }
 
 export default function RootLayout({
@@ -21,11 +20,9 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <Header />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
+        <Providers>{children}</Providers>
       </body>
     </html>
   )
