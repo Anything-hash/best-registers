@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { AnimatePresence } from "framer-motion"
 import { LoadingScreen } from "./loading-screen"
 import { FireBreathingBackground } from "./fire-breathing-background"
 import { WaterFlowBackground } from "./water-flow-background"
@@ -16,26 +16,24 @@ import { FloatingChatButton } from "../ai-assistant/floating-chat-button"
 
 export function LandingPage() {
   const [isLoading, setIsLoading] = useState(true)
-  const [currentElement, setCurrentElement] = useState<"fire" | "water" | "air">("fire")
+  const [currentElement, setCurrentElement] = useState(0)
+
+  const elements = ["fire", "water", "air"]
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false)
-    }, 2500)
+    }, 3000)
 
-    // Cycle through elements every 10 seconds
-    const elementTimer = setInterval(() => {
-      setCurrentElement((prev) => {
-        if (prev === "fire") return "water"
-        if (prev === "water") return "air"
-        return "fire"
-      })
+    return () => clearTimeout(timer)
+  }, [])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentElement((prev) => (prev + 1) % elements.length)
     }, 10000)
 
-    return () => {
-      clearTimeout(timer)
-      clearInterval(elementTimer)
-    }
+    return () => clearInterval(interval)
   }, [])
 
   if (isLoading) {
@@ -43,29 +41,23 @@ export function LandingPage() {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 1.5 }}
-      className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 relative overflow-hidden"
-    >
-      {/* Elemental Backgrounds */}
+    <div className="relative min-h-screen overflow-hidden">
       <AnimatePresence mode="wait">
-        {currentElement === "fire" && <FireBreathingBackground key="fire" />}
-        {currentElement === "water" && <WaterFlowBackground key="water" />}
-        {currentElement === "air" && <AirCurrentsBackground key="air" />}
+        {currentElement === 0 && <FireBreathingBackground key="fire" />}
+        {currentElement === 1 && <WaterFlowBackground key="water" />}
+        {currentElement === 2 && <AirCurrentsBackground key="air" />}
       </AnimatePresence>
 
       <div className="relative z-10">
         <Navigation />
-        <HeroSection currentElement={currentElement} />
-        <StatsSection />
-        <FeaturesSection />
-        <TestimonialsSection />
-        <CTASection />
+        <HeroSection currentElement={elements[currentElement]} />
+        <StatsSection currentElement={elements[currentElement]} />
+        <FeaturesSection currentElement={elements[currentElement]} />
+        <TestimonialsSection currentElement={elements[currentElement]} />
+        <CTASection currentElement={elements[currentElement]} />
       </div>
 
       <FloatingChatButton />
-    </motion.div>
+    </div>
   )
 }
