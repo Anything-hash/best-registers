@@ -4,292 +4,307 @@ import { motion } from "framer-motion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
-import { Activity, Zap, Cloud, Sun, CloudRain, TrendingUp, Server, Database } from "lucide-react"
-import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from "recharts"
+import { Activity, Server, Sun, Cloud, CloudRain, Eye } from "lucide-react"
 
-const performanceData = [
-  { time: "00:00", cpu: 45, memory: 62, network: 23 },
-  { time: "04:00", cpu: 52, memory: 58, network: 31 },
-  { time: "08:00", cpu: 78, memory: 71, network: 45 },
-  { time: "12:00", cpu: 85, memory: 79, network: 52 },
-  { time: "16:00", cpu: 92, memory: 84, network: 48 },
-  { time: "20:00", cpu: 67, memory: 73, network: 38 },
+const performanceMetrics = [
+  {
+    name: "CPU Usage",
+    value: 68,
+    status: "good",
+    weather: "sunny",
+    description: "Sunny performance",
+  },
+  {
+    name: "Memory Usage",
+    value: 82,
+    status: "warning",
+    weather: "cloudy",
+    description: "Partly cloudy",
+  },
+  {
+    name: "Disk I/O",
+    value: 45,
+    status: "excellent",
+    weather: "sunny",
+    description: "Clear skies",
+  },
+  {
+    name: "Network",
+    value: 91,
+    status: "critical",
+    weather: "rainy",
+    description: "Storm warning",
+  },
 ]
 
-const weatherPerformance = [
-  { condition: "Sunny", uptime: 99.9, response: 120, errors: 0.1 },
-  { condition: "Cloudy", uptime: 99.7, response: 145, errors: 0.3 },
-  { condition: "Rainy", uptime: 99.5, response: 180, errors: 0.5 },
+const systemHealth = [
+  {
+    component: "API Server",
+    status: "healthy",
+    uptime: "99.9%",
+    weather: "sunny",
+    responseTime: "45ms",
+  },
+  {
+    component: "Database",
+    status: "healthy",
+    uptime: "99.8%",
+    weather: "cloudy",
+    responseTime: "12ms",
+  },
+  {
+    component: "Cache Layer",
+    status: "warning",
+    uptime: "98.5%",
+    weather: "rainy",
+    responseTime: "89ms",
+  },
+  {
+    component: "File Storage",
+    status: "healthy",
+    uptime: "99.9%",
+    weather: "sunny",
+    responseTime: "23ms",
+  },
 ]
 
 export function PerformanceContent() {
+  const getWeatherIcon = (weather: string) => {
+    switch (weather) {
+      case "sunny":
+        return Sun
+      case "cloudy":
+        return Cloud
+      case "rainy":
+        return CloudRain
+      default:
+        return Sun
+    }
+  }
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "excellent":
+        return "text-green-600"
+      case "good":
+        return "text-blue-600"
+      case "warning":
+        return "text-yellow-600"
+      case "critical":
+        return "text-red-600"
+      case "healthy":
+        return "text-green-600"
+      default:
+        return "text-gray-600"
+    }
+  }
+
+  const getProgressColor = (value: number) => {
+    if (value < 50) return "bg-green-500"
+    if (value < 80) return "bg-yellow-500"
+    return "bg-red-500"
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-      {/* Weather-themed Header */}
-      <div className="bg-gradient-to-r from-purple-400 via-blue-500 to-green-500 text-white p-8">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="container mx-auto"
-        >
-          <div className="flex items-center space-x-4 mb-4">
-            <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}>
-              <Activity className="w-12 h-12 text-white" />
+    <div className="space-y-8">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white p-8 rounded-2xl shadow-xl"
+      >
+        <div className="flex items-center space-x-4 mb-4">
+          <motion.div
+            animate={{
+              rotate: 360,
+              scale: [1, 1.1, 1],
+            }}
+            transition={{
+              rotate: { duration: 3, repeat: Number.POSITIVE_INFINITY, ease: "linear" },
+              scale: { duration: 2, repeat: Number.POSITIVE_INFINITY },
+            }}
+          >
+            <Activity className="w-12 h-12 text-white" />
+          </motion.div>
+          <h1 className="text-4xl font-bold">Performance Monitor</h1>
+        </div>
+        <p className="text-xl opacity-90">Real-time system health with weather-inspired insights</p>
+      </motion.div>
+
+      {/* Performance Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {performanceMetrics.map((metric, index) => {
+          const WeatherIcon = getWeatherIcon(metric.weather)
+
+          return (
+            <motion.div
+              key={metric.name}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              <Card className="bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-700">{metric.name}</CardTitle>
+                  <motion.div
+                    animate={{
+                      rotate: metric.weather === "sunny" ? 360 : 0,
+                      y: metric.weather === "cloudy" ? [0, -5, 0] : 0,
+                    }}
+                    transition={{
+                      rotate: {
+                        duration: 8,
+                        repeat: metric.weather === "sunny" ? Number.POSITIVE_INFINITY : 0,
+                        ease: "linear",
+                      },
+                      y: { duration: 3, repeat: metric.weather === "cloudy" ? Number.POSITIVE_INFINITY : 0 },
+                    }}
+                  >
+                    <WeatherIcon className={`h-4 w-4 ${getStatusColor(metric.status)}`} />
+                  </motion.div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-gray-800 mb-2">{metric.value}%</div>
+                  <Progress value={metric.value} className="mb-2" />
+                  <p className="text-xs text-gray-600">{metric.description}</p>
+                </CardContent>
+              </Card>
             </motion.div>
-            <div>
-              <h1 className="text-4xl font-bold">Performance Dashboard</h1>
-              <p className="text-xl opacity-90">Weather-optimized system monitoring</p>
-            </div>
-          </div>
-        </motion.div>
+          )
+        })}
       </div>
 
-      <div className="container mx-auto p-8">
-        {/* Performance Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            <Card className="bg-gradient-to-br from-green-100 to-emerald-100 border-green-200">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-green-800">System Uptime</CardTitle>
-                <Zap className="h-4 w-4 text-green-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-green-900">99.9%</div>
-                <p className="text-xs text-green-700">Last 30 days</p>
-                <Progress value={99.9} className="mt-2" />
-              </CardContent>
-            </Card>
-          </motion.div>
+      {/* System Health */}
+      <Card className="bg-white/80 backdrop-blur-sm shadow-xl">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Server className="w-5 h-5 text-purple-600" />
+            <span>System Health Dashboard</span>
+          </CardTitle>
+          <CardDescription>Monitor all system components with weather-themed status indicators</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {systemHealth.map((system, index) => {
+              const WeatherIcon = getWeatherIcon(system.weather)
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <Card className="bg-gradient-to-br from-blue-100 to-cyan-100 border-blue-200">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-blue-800">Response Time</CardTitle>
-                <Server className="h-4 w-4 text-blue-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-blue-900">142ms</div>
-                <p className="text-xs text-blue-700">Average response</p>
-                <Progress value={85} className="mt-2" />
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            <Card className="bg-gradient-to-br from-purple-100 to-pink-100 border-purple-200">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-purple-800">Memory Usage</CardTitle>
-                <Database className="h-4 w-4 text-purple-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-purple-900">73%</div>
-                <p className="text-xs text-purple-700">8GB / 16GB used</p>
-                <Progress value={73} className="mt-2" />
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            <Card className="bg-gradient-to-br from-orange-100 to-red-100 border-orange-200">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-orange-800">Error Rate</CardTitle>
-                <TrendingUp className="h-4 w-4 text-orange-600" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-orange-900">0.2%</div>
-                <p className="text-xs text-orange-700">Last 24 hours</p>
-                <Progress value={2} className="mt-2" />
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-
-        {/* Performance Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-          >
-            <Card className="bg-white/80 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Activity className="w-5 h-5 text-blue-600" />
-                  <span>System Performance</span>
-                </CardTitle>
-                <CardDescription>Real-time system metrics over 24 hours</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart data={performanceData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="time" />
-                    <YAxis />
-                    <Tooltip />
-                    <Area type="monotone" dataKey="cpu" stackId="1" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.6} />
-                    <Area
-                      type="monotone"
-                      dataKey="memory"
-                      stackId="1"
-                      stroke="#10b981"
-                      fill="#10b981"
-                      fillOpacity={0.6}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="network"
-                      stackId="1"
-                      stroke="#f59e0b"
-                      fill="#f59e0b"
-                      fillOpacity={0.6}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-          >
-            <Card className="bg-white/80 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Cloud className="w-5 h-5 text-blue-600" />
-                  <span>Weather Impact Analysis</span>
-                </CardTitle>
-                <CardDescription>Performance metrics by weather conditions</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {weatherPerformance.map((item, index) => (
-                    <motion.div
-                      key={item.condition}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 0.7 + index * 0.1 }}
-                      className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-white rounded-lg border"
+              return (
+                <motion.div
+                  key={system.component}
+                  initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="p-4 bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg border border-gray-200 hover:shadow-md transition-all duration-300"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center space-x-3">
+                      <motion.div
+                        animate={{
+                          rotate: system.weather === "sunny" ? 360 : 0,
+                          scale: system.status === "healthy" ? [1, 1.1, 1] : 1,
+                        }}
+                        transition={{
+                          rotate: {
+                            duration: 10,
+                            repeat: system.weather === "sunny" ? Number.POSITIVE_INFINITY : 0,
+                            ease: "linear",
+                          },
+                          scale: { duration: 2, repeat: system.status === "healthy" ? Number.POSITIVE_INFINITY : 0 },
+                        }}
+                      >
+                        <WeatherIcon className={`w-6 h-6 ${getStatusColor(system.status)}`} />
+                      </motion.div>
+                      <h3 className="font-semibold text-gray-800">{system.component}</h3>
+                    </div>
+                    <Badge
+                      variant={system.status === "healthy" ? "default" : "destructive"}
+                      className={
+                        system.status === "healthy"
+                          ? "bg-green-100 text-green-700"
+                          : system.status === "warning"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-red-100 text-red-700"
+                      }
                     >
-                      <div className="flex items-center space-x-3">
-                        {item.condition === "Sunny" && <Sun className="w-6 h-6 text-yellow-500" />}
-                        {item.condition === "Cloudy" && <Cloud className="w-6 h-6 text-blue-500" />}
-                        {item.condition === "Rainy" && <CloudRain className="w-6 h-6 text-gray-500" />}
-                        <div>
-                          <div className="font-semibold">{item.condition}</div>
-                          <div className="text-sm text-gray-600">Weather condition</div>
-                        </div>
-                      </div>
-                      <div className="flex space-x-6">
-                        <div className="text-center">
-                          <div className="text-lg font-bold text-green-600">{item.uptime}%</div>
-                          <div className="text-xs text-gray-500">Uptime</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-lg font-bold text-blue-600">{item.response}ms</div>
-                          <div className="text-xs text-gray-500">Response</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-lg font-bold text-orange-600">{item.errors}%</div>
-                          <div className="text-xs text-gray-500">Errors</div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
+                      {system.status}
+                    </Badge>
+                  </div>
 
-        {/* Weather-Based Performance Alerts */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-        >
-          <Card className="bg-gradient-to-r from-blue-500 to-green-500 text-white">
-            <CardHeader>
-              <CardTitle className="text-2xl">Weather-Optimized Performance Alerts</CardTitle>
-              <CardDescription className="text-blue-100">
-                Smart monitoring that adapts to weather conditions
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="text-gray-600">Uptime</p>
+                      <p className="font-semibold text-gray-800">{system.uptime}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-600">Response Time</p>
+                      <p className="font-semibold text-gray-800">{system.responseTime}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Weather Forecast for Performance */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.5 }}
+      >
+        <Card className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-2xl">
+          <CardHeader>
+            <CardTitle className="text-2xl flex items-center space-x-2">
+              <Eye className="w-6 h-6" />
+              <span>Performance Weather Forecast</span>
+            </CardTitle>
+            <CardDescription className="text-indigo-100">
+              Predicted system performance for the next 7 days
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-7 gap-4">
+              {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day, index) => (
                 <motion.div
+                  key={day}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: 0.9 }}
-                  className="bg-white/20 rounded-lg p-6 text-center"
+                  transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
+                  className="text-center bg-white/20 rounded-lg p-4 backdrop-blur-sm"
                 >
+                  <div className="font-semibold mb-2">{day}</div>
                   <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 8, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+                    animate={{
+                      rotate: index % 3 === 0 ? 360 : 0,
+                      y: index % 3 === 1 ? [0, -5, 0] : 0,
+                    }}
+                    transition={{
+                      rotate: { duration: 8, repeat: index % 3 === 0 ? Number.POSITIVE_INFINITY : 0, ease: "linear" },
+                      y: { duration: 3, repeat: index % 3 === 1 ? Number.POSITIVE_INFINITY : 0 },
+                    }}
                   >
-                    <Sun className="w-12 h-12 text-yellow-300 mx-auto mb-4" />
+                    {index % 3 === 0 ? (
+                      <Sun className="w-8 h-8 text-yellow-300 mx-auto mb-2" />
+                    ) : index % 3 === 1 ? (
+                      <Cloud className="w-8 h-8 text-blue-200 mx-auto mb-2" />
+                    ) : (
+                      <CloudRain className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                    )}
                   </motion.div>
-                  <h3 className="text-xl font-bold mb-2">Sunny Day Optimization</h3>
-                  <p className="text-blue-100 mb-4">Peak performance mode activated</p>
-                  <Badge className="bg-green-500 text-white">All Systems Go</Badge>
+                  <div className="text-sm mb-1">
+                    {index % 3 === 0 ? "Optimal" : index % 3 === 1 ? "Good" : "Maintenance"}
+                  </div>
+                  <div className="text-xs opacity-75">
+                    {index % 3 === 0 ? "95% uptime" : index % 3 === 1 ? "92% uptime" : "Scheduled work"}
+                  </div>
                 </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: 1.0 }}
-                  className="bg-white/20 rounded-lg p-6 text-center"
-                >
-                  <motion.div
-                    animate={{ x: [-5, 5, -5] }}
-                    transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
-                  >
-                    <Cloud className="w-12 h-12 text-blue-200 mx-auto mb-4" />
-                  </motion.div>
-                  <h3 className="text-xl font-bold mb-2">Cloudy Weather Mode</h3>
-                  <p className="text-blue-100 mb-4">Balanced resource allocation</p>
-                  <Badge className="bg-blue-500 text-white">Stable</Badge>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: 1.1 }}
-                  className="bg-white/20 rounded-lg p-6 text-center"
-                >
-                  <motion.div
-                    animate={{ y: [-3, 3, -3] }}
-                    transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
-                  >
-                    <CloudRain className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                  </motion.div>
-                  <h3 className="text-xl font-bold mb-2">Rainy Day Protocol</h3>
-                  <p className="text-blue-100 mb-4">Enhanced monitoring active</p>
-                  <Badge className="bg-yellow-500 text-white">Monitoring</Badge>
-                </motion.div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
   )
 }

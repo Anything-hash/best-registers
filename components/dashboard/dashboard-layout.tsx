@@ -74,7 +74,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 top: `-10px`,
               }}
               animate={{
-                y: [0, window.innerHeight + 50],
+                y: [0, 800],
               }}
               transition={{
                 duration: Math.random() * 3 + 2,
